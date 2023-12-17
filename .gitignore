@@ -1,0 +1,6 @@
+node_modules
+dist
+*/**/*.json
+*.env
+.vscode
+.intellij
