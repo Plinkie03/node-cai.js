@@ -73,6 +73,10 @@ export class CharacterAIPage {
         return this.token
     }
 
+    public get ready() {
+        return !!this.token
+    }
+
     public async getFeaturedCharacters() {
         const req = await this.request({
             endpoint: Endpoints.FeaturedCharacters, 
@@ -83,8 +87,9 @@ export class CharacterAIPage {
         return req.characters.map(x => new FeaturedCharacter(this, x))
     } 
 
-    private async expectJSON<T = any>(res: Error | HTTPResponse | unknown) {
+    private async expectJSON<T = any>(res: Error | HTTPResponse | any) {
         if (res instanceof Error) throw res
+        else if ("error" in res) throw new Error(res.error)
 
         if (!(res instanceof HTTPResponse)) {
             if (typeof res !== "object") 
@@ -101,9 +106,13 @@ export class CharacterAIPage {
         return res.json() as T
     }
 
-    public async request<T extends typeof Endpoints[keyof typeof Endpoints]>(...args: ConstructorParameters<typeof Request<T>>) {
+    public async request<T extends typeof Endpoints[keyof typeof Endpoints]>(options: ConstructorParameters<typeof Request<T>>[0]) {
+        if (!this.ready && options.endpoint !== Endpoints.Authentication) {
+            throw new Error("Do not perform any request until the connection to the API has been established.")
+        }
+
         return await this.mutex.lock(async () => {
-            const request = new Request(...args)
+            const request = new Request(options)
             
             request.options.headers ??= {}
             request.options.headers["authorization"] = "Token " + this.token

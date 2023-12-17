@@ -4,7 +4,7 @@ import { CharacterAIPage } from "./CharacterAIPage";
 export interface ICharacterAIOptions {
     token: string
     screen?: [w: number, h: number]
-    headless?: boolean
+    headless?: boolean | "new"
 }
 
 export class CharacterAI {
