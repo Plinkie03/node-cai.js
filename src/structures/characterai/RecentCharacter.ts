@@ -63,12 +63,3 @@ export class RecentCharacter {
         return this.page.getCharacterInfo(this.characterId)
     }
 }
-
-export class RecentCharacterList extends Array<RecentCharacter> {
-    constructor(
-        private readonly page: CharacterAIPage,
-        data: IRequest[typeof Endpoints.RecentCharacters][1]
-    ) {
-        super(...data.characters.map(x => new RecentCharacter(page, x)))
-    }
-}

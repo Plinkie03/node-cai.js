@@ -65,12 +65,3 @@ export class SearchCharacter {
         return this.page.getCharacterInfo(this.characterId)
     }
 }
-
-export class SearchCharacterList extends Array<SearchCharacter> {
-    public constructor(
-        private readonly page: CharacterAIPage,
-        data: ISearch
-    ) {
-        super(...data.characters.map(x => new SearchCharacter(page, x)))
-    }
-}

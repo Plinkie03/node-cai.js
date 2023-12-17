@@ -4,11 +4,10 @@ dotenv.config()
 
 const cai = new CharacterAI({
     token: process.env.TOKEN as string,
-    headless: false
+    headless: true
 })
 
 cai.browser.init().then(async () => {
-    const char = await cai.call("searchCharacters", "silvervale").then(x => x[0])
-    console.log(await cai.call("getFeaturedCharacters"))
+    console.log(await cai.call("searchCharacters", "hello"))
     return null
 })

@@ -1,6 +1,5 @@
 import { ContinueRequestOverrides, HTTPResponse, Page } from "puppeteer";
 import { BaseIconURL, BaseUploadImageURL, Endpoints } from "../constants";
-import { History, HistoryList, IHistory } from "../structures/characterai/History";
 import { CharacterAI } from "./CharacterAI";
 import { Chat, IChat, IDeleteMessageOptions, IGenerateImageOptions, IMessageOptions } from "../structures/characterai/Chat";
 import { Character, ICharacter } from "../structures/characterai/Character";
@@ -11,9 +10,10 @@ import FormData from "form-data";
 import { Image } from "../structures/Image";
 import { ChatReply } from "../structures/characterai/ChatReply";
 import { Mutex } from "../structures/Mutex";
-import { RecentCharacterList } from "../structures/characterai/RecentCharacter";
-import { SearchCharacterList } from "../structures/characterai/SearchCharacter";
-import { FeaturedCharacterList } from "../structures/characterai/FeaturedCharacter";
+import { History } from "../structures/characterai/History";
+import { SearchCharacter } from "../structures/characterai/SearchCharacter";
+import { FeaturedCharacter } from "../structures/characterai/FeaturedCharacter";
+import { RecentCharacter } from "../structures/characterai/RecentCharacter";
 
 export class CharacterAIPage {
     private token!: string
@@ -58,7 +58,7 @@ export class CharacterAIPage {
             payload: null
         })
 
-        return new RecentCharacterList(this, req)
+        return req.characters.map(x => new RecentCharacter(this, x))
     }
 
     public async authenticate() {
@@ -80,7 +80,7 @@ export class CharacterAIPage {
             method: "GET"
         })
 
-        return new FeaturedCharacterList(this, req)
+        return req.characters.map(x => new FeaturedCharacter(this, x))
     } 
 
     private async expectJSON<T = any>(res: Error | HTTPResponse | unknown) {
@@ -115,8 +115,6 @@ export class CharacterAIPage {
     
             const overrides = request.overrides
     
-            console.log(`Performing`, request.method, `request to`, request.url, `with options`, overrides)
-            
             if (request.isStreaming) {
                 const response = await this.page.evaluate(async function(url, options) {
                     const res = await fetch(url, {
@@ -155,7 +153,7 @@ export class CharacterAIPage {
             }
         })
 
-        return new HistoryList(this, req)
+        return req.histories.map(x => new History(this, x))
     }
 
     async searchCharacters(query: string) {
@@ -167,7 +165,7 @@ export class CharacterAIPage {
                 query
             }
         })
-        return new SearchCharacterList(this, req)
+        return req.characters.map(x => new SearchCharacter(this, x))
     }
 
     async getCharacterInfo(externalId: string) {

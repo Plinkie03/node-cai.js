@@ -4,13 +4,15 @@ import { Chat } from "./Chat";
 import { ChatMessage } from "./ChatMessage";
 import { IRequest } from "../Request";
 
-export class ChatHistory extends Array<ChatMessage> {
+export class ChatHistory {
     public constructor(
         private readonly page: CharacterAIPage,
         private readonly chat: Chat,
         private readonly data: IRequest[typeof Endpoints.MessageHistory][1]
-    ) {
-        super(...data.messages.map(x => new ChatMessage(page, chat, x)))
+    ) {}
+
+    public get messages() {
+        return this.data.messages.map(x => new ChatMessage(this.page, this.chat, x))
     }
 
     public get hasMore() {
@@ -22,7 +24,7 @@ export class ChatHistory extends Array<ChatMessage> {
     }
 
     public deleteAll() {
-        return this.deleteMessages(this.filter(x => x.isHuman))
+        return this.deleteMessages(this.messages.filter(x => x.isHuman))
     }
     
     public deleteMessages(messages: (ChatMessage | string)[]) {

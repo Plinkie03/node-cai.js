@@ -54,12 +54,3 @@ export class FeaturedCharacter {
         return `${BaseIconURL}/${this.data.avatar_file_name}`
     }
 }
-
-export class FeaturedCharacterList extends Array<FeaturedCharacter> {
-    public constructor(
-        private readonly page: CharacterAIPage,
-        data: IRequest[typeof Endpoints.FeaturedCharacters][1]
-    ) {
-        super(...data.characters.map(x => new FeaturedCharacter(page, x)))
-    }
-}

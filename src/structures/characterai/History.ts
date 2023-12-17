@@ -22,12 +22,3 @@ export class History {
         return this.data.external_id
     }
 }
-
-export class HistoryList extends Array<History> {
-    public constructor(
-        private readonly page: CharacterAIPage,
-        data: IHistory
-    ) {
-        super(...data.histories.map(x => new History(page, x)))
-    }
-}
